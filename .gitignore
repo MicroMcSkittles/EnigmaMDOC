@@ -1,0 +1,14 @@
+# Visual Studio Files
+
+.vscode
+.vs
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+
+# Build Files
+
+bin
+bin-int
+Makefile
