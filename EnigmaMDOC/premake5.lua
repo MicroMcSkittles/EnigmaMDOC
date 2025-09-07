@@ -18,6 +18,11 @@ project "EnigmaMDOC"
 
     includedirs {
         "src",
+        rootdir .. "vendor/CommandLineTools/CommandLineTools/CommandLineTools"
+    }
+
+    links {
+        "CommandLineTools"
     }
 
 -- Windows ==========================

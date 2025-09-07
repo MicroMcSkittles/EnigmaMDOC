@@ -1,0 +1,3 @@
+[submodule "vendor/CommandLineTools/CommandLineTools"]
+	path = vendor/CommandLineTools/CommandLineTools
+	url = https://github.com/MicroMcSkittles/CommandLineTools.git
