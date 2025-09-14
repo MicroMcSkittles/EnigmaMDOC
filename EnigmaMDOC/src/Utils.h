@@ -12,4 +12,6 @@
 namespace EMDOC {
 	std::string LoadFileStr(const std::string& filename);
 	std::string RemoveWhiteSpace(const std::string& str);
+
+	std::string FindFirstWord(const std::string& str, size_t& offset, const std::string& startSeparater = " \n\t\r\0", const std::string& endSeparater = " \n\t\r\0");
 }

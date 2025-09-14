@@ -1,0 +1,201 @@
+{
+	"src\\ConfigurationLoader.h": {
+		"content": {
+			"Config": {
+				"branch_type": "struct",
+				"children": {
+					"commandTag": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The tag that the generator looks for in the source code comments ",
+						"name": "commandTag",
+						"type": "std::string"
+					},
+					"createJSONInt": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "Tells the generator to output the intermedeat JSON to a file",
+						"name": "createJSONInt",
+						"type": "bool"
+					},
+					"extensions": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The file extensions that the generator will read from",
+						"name": "extensions",
+						"type": "std::map<std::string, FileType>"
+					},
+					"inputPath": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The folder that the generator will read files from",
+						"name": "inputPath",
+						"type": "std::string"
+					},
+					"outputPath": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The folder final MarkDown documents get stored too",
+						"name": "outputPath",
+						"type": "std::string"
+					}
+				},
+				"description": "The configurations for the MarkDown document generator",
+				"name": "Config"
+			}
+		},
+		"filename": "src\\ConfigurationLoader.h"
+	},
+	"src\\FileIterator.h": {
+		"content": {
+			"GetFilesToProcess": {
+				"branch_type": "function",
+				"description": "Searches the input folder for files with the specified extinsions ",
+				"function_definition": "std::vector<std::string> GetFilesToProcess(const std::string& currentPath, const Config& config)",
+				"name": "GetFilesToProcess",
+				"parameters": {
+				},
+				"return_description": "Returns a list of paths ",
+				"return_type": "std::vector<std::string>"
+			},
+			"ProcessFiles": {
+				"branch_type": "function",
+				"description": "Creates a JSON tree with the documentation info from the files ",
+				"function_definition": "void ProcessFiles(const std::vector<std::string>& files, CLT::DataBranch& docTree, const Config& config)",
+				"name": "ProcessFiles",
+				"parameters": {
+				},
+				"return_description": null,
+				"return_type": "void"
+			},
+			"VarifyDirectories": {
+				"branch_type": "function",
+				"description": "Makes sure the output folders exist ",
+				"function_definition": "void VarifyDirectories(const Config& config)",
+				"name": "VarifyDirectories",
+				"parameters": {
+				},
+				"return_description": null,
+				"return_type": "void"
+			}
+		},
+		"filename": "src\\FileIterator.h"
+	},
+	"src\\FileParser.h": {
+		"content": {
+			"CommentBlock": {
+				"branch_type": "struct",
+				"children": {
+					"FindCommandType": {
+						"branch_type": "function",
+						"description": "Returns the type tag that follows the command tag ",
+						"function_definition": "std::string FindCommandType(const Config& config) const",
+						"name": "FindCommandType",
+						"parameters": {
+							"config": {
+								"branch_type": "variable",
+								"default_value": null,
+								"description": "The configuration that was loaded in from file",
+								"name": "config",
+								"type": "const Config&"
+							}
+						},
+						"return_description": null,
+						"return_type": "std::string"
+					},
+					"end": {
+						"branch_type": "variable",
+						"default_value": "std::string::npos",
+						"description": "Where the command ends in the source code",
+						"name": "end",
+						"type": "size_t"
+					},
+					"line": {
+						"branch_type": "variable",
+						"default_value": "std::string::npos",
+						"description": "The line the command is on in the file",
+						"name": "line",
+						"type": "size_t"
+					},
+					"start": {
+						"branch_type": "variable",
+						"default_value": "std::string::npos",
+						"description": "Where the command starts in the source code",
+						"name": "start",
+						"type": "size_t"
+					},
+					"text": {
+						"branch_type": "variable",
+						"default_value": "\"\"",
+						"description": "All of the text in a comment",
+						"name": "text",
+						"type": "std::string"
+					}
+				},
+				"description": "Stores the information needed to parse comments",
+				"name": "CommentBlock"
+			},
+			"FindCommentBlocks": {
+				"branch_type": "function",
+				"description": "Looks through a file and finds comments that contain the command tag",
+				"function_definition": "std::vector<CommentBlock> FindCommentBlocks(const std::string& filename, const Config& config)",
+				"name": "FindCommentBlocks",
+				"parameters": {
+					"config": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The configuration that was loaded in from file",
+						"name": "config",
+						"type": "const Config&"
+					},
+					"filename": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The specific file that is being parsed",
+						"name": "filename",
+						"type": "const std::string&"
+					}
+				},
+				"return_description": "Returns a list of the comment blocks that contain command tags",
+				"return_type": "std::vector<CommentBlock>"
+			}
+		},
+		"filename": "src\\FileParser.h"
+	},
+	"src\\MarkDownGenerator.h": {
+		"content": {
+			"BranchPriorityMap": {
+				"branch_type": "variable",
+				"default_value": null,
+				"description": "Used for organizing the differant branches based on there type",
+				"name": "BranchPriorityMap",
+				"type": "extern std::map<std::string, size_t>"
+			},
+			"GenerateMarkdown": {
+				"branch_type": "function",
+				"description": "Generates MarkDown source code from a JSON tree",
+				"function_definition": "void GenerateMarkdown(const CLT::DataBranch& docTree, const Config& config)",
+				"name": "GenerateMarkdown",
+				"parameters": {
+					"config": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The configuration that was loaded in from file",
+						"name": "config",
+						"type": "const Config&"
+					},
+					"docTree": {
+						"branch_type": "variable",
+						"default_value": null,
+						"description": "The JSON tree",
+						"name": "docTree",
+						"type": "const CLT::DataBranch&"
+					}
+				},
+				"return_description": null,
+				"return_type": "void"
+			}
+		},
+		"filename": "src\\MarkDownGenerator.h"
+	}
+}

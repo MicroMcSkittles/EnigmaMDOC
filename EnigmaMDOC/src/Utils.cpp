@@ -44,4 +44,12 @@ namespace EMDOC {
 		return outputBuffer.str();
 	}
 
+	std::string FindFirstWord(const std::string& str, size_t& offset, const std::string& startSeparater, const std::string& endSeparater)
+	{
+		size_t start = str.find_first_not_of(startSeparater, offset);
+		size_t end = str.find_first_of(endSeparater, start);
+		if (end == std::string::npos) return "";
+		offset = end + 1;
+		return std::string(str.begin() + start, str.begin() + end);
+	}
 }

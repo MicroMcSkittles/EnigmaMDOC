@@ -6,20 +6,26 @@
 
 namespace EMDOC {
 	// @EMDOC DEF Stores the information needed to parse comments
-	struct CommentBlock{
-		std::string text = "";                // @EMDOC ELEM All of the text in a comment
-		size_t start     = std::string::npos; // @EMDOC ELEM Where the comment starts in the source code
-		size_t end       = std::string::npos; // @EMDOC ELEM Where the comment ends in the source code
+	struct CommentBlock {
+		std::string text = "";                // @EMDOC DEF All of the text in a comment
+		size_t start     = std::string::npos; // @EMDOC DEF Where the command starts in the source code
+		size_t end       = std::string::npos; // @EMDOC DEF Where the command ends in the source code
+		size_t commentStart = std::string::npos;
+		size_t commentEnd = std::string::npos;
+
+		size_t line = std::string::npos; // @EMDOC DEF The line the command is on in the file
+
 		/*
 		@EMDOC DEF Returns the type tag that follows the command tag 
 		@EMDOC PARAM The configuration that was loaded in from file
 		@EMDOC NDEF
 		*/
-		std::string FindCommandType(const Config& config = Config()) const;
+		std::string FindCommandType(const Config& config) const;
 	};
 	// @EMDOC NDEF
 
 	// C/CPP Functions
+	void SplitCommentBlockCPP(std::vector<CommentBlock>& blocks, const std::string& fileContent, const Config& config);
 	std::vector<CommentBlock> FindCommentBlocksCPP(const std::string& filename, const Config& config);
 
 	/*

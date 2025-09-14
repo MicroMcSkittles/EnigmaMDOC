@@ -1,0 +1,10 @@
+{
+    "output_path": "docs",
+    "input_path": "src",
+    "command_tag": "@EMDOC",
+    "create_JSON_int": true,
+    "extensions": [
+        [".h", "C++"],
+        [".hpp", "C++"]
+    ]
+}

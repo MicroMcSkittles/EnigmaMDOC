@@ -8,68 +8,78 @@
 
 #include <iostream>
 #include <CommandLineTools/IOFormat.h>
+#include <CommandLineTools/JSONparser.h>
 
 namespace EMDOC {
+	FileType GetFileLanguageType(const std::string& extension)
+	{
+		std::string lower = extension;
+		for (char& c : lower) c = tolower(c);
+
+		if (lower == "c++"  || lower == "cpp" || lower == "c") return FileType::CnCPP;
+		if (lower == "bash" || lower == "shell")               return FileType::BASH;
+		if (lower == "py"   || lower == "python")              return FileType::PYTHON;
+		
+		return FileType::None;
+	}
 
 	Config LoadConfigFile()
 	{
-		// Open the config file
-		std::ifstream configFile;
-		configFile.open("../config.EMDOC");
-		ASSERT(configFile.is_open(), "Please create a \"config.EMDOC\" file");
-
-		// Move file content to a string stream for easier parsing
-		std::stringstream fileContentBuffer;
-		fileContentBuffer << configFile.rdbuf();
-		configFile.close();
-
-		// Remove white spaces from the file content
-		std::string fileContent = RemoveWhiteSpace(fileContentBuffer.str());
-
-		// Find all of the config variables specified in the config file
-		std::map<std::string, std::string> configVariables;
-		
-		size_t start = 0;
-		size_t end = 0;
-		while ((end = fileContent.find_first_of("=", start)) != std::string::npos) {
-			// Get variable name
-			std::string configVarName(fileContent.begin() + start, fileContent.begin() + end);
-			start = end + 1;
-			// Get variable value
-			end = fileContent.find_first_of("\n\0", start);
-			std::string configVarValue(fileContent.begin() + start, fileContent.begin() + end);
-			ASSERT(!configVarValue.empty(), "Invalid config file format: Expected value for ( " + configVarName + " )");
-			start = end + 1;
-
-			// If variable was already defined then don't redefine it
-			if (configVariables.count(configVarName)) {
-				WARNING("Variable ( " + configVarName + " ) is already defined, using first definition");
-				continue;
-			}
-
-			// Store the variable
-			configVariables.insert({ configVarName, configVarValue });
+		// Load JSON config file
+		CLT::DataBranch tree;
+		CLT::JSONError error = CLT::JSON::LoadJSON(tree, "EMDOC.json");
+		if (CLT::GetJSONErrorType(error) == CLT::JSONErrorType::FileFailedToOpen) {
+			ERROR("Failed to load config file, please create a EMDOC.json file");
 		}
-		ASSERT(fileContent.find_first_of("\n\0", start) == std::string::npos, "Invalid config file format: Expected equal sign \"=\"");
+		else if (error) {
+			ERROR(CLT::JSONErrorMessage(error));
+		}
 
-		// Make sure the crucial variables are set
-		ASSERT(configVariables.count("output_path"), "No output path set, Please set the variable \"output_path\" in the config.EMDOC file");
-		ASSERT(configVariables.count("input_path"),  "No input path set, Please set the variable \"input_path\" in the config.EMDOC file");
+		// Make sure the essential variables were set
+		ASSERT(!tree["input_path"].data.IsNull(),  "Invalid configuration, please set the \"input_path\" variable");
+		ASSERT(!tree["output_path"].data.IsNull(), "Invalid configuration, please set the \"output_path\" variable");
+		ASSERT(!tree["extensions"].data.IsNull(),  "Invalid configuration, please set the \"extensions\" array variable");
 
 		// Create the config struct
 		Config config;
-		config.outputPath = configVariables["output_path"];
-		config.inputPath  = configVariables["input_path"];
+		config.inputPath  = tree["input_path"].data;
+		config.outputPath = tree["output_path"].data;
+		config.createJSONInt = tree["create_JSON_int"].data;
 
-		// TODO: just use json bro
-		//config.extensions.push_back(".c");
-		config.extensions.push_back(".h");
-		//config.extensions.push_back(".cpp");
-		config.extensions.push_back(".hpp");
+		if (!tree["command_tag"].data.IsNull()) config.commandTag = tree["command_tag"].data;
+		else config.commandTag = "@EMDOC";
 
-		config.commandTag = "@EMDOC";
+		// Copy the extensions to the config struct
+		for (size_t i = 0; i < tree["extensions"].elements.size(); ++i) {
+			if (tree["extensions"].elements[i].elements.size() != 2) continue;
+			std::string extension = tree["extensions"].elements[i].elements[0].data;
+			FileType type = GetFileLanguageType(tree["extensions"].elements[i].elements[1].data);
+			if (type == FileType::None) continue;
+			config.extensions.insert({ extension, type });
+		}
 
 		return config;
+	}
+
+	void PrintConfig(const Config& config)
+	{
+		// Create table with the config data
+		CLT::Table configTable = CLT::CreateTable("Configuration", { "Variable", "Value" });
+
+		configTable << "Input Path";
+		configTable << config.inputPath;
+		configTable << "Output Path";
+		configTable << config.outputPath;
+
+		configTable << "Command Tag";
+		configTable << config.commandTag;
+
+		configTable << "File Extensions";
+		//configTable << config.extensions;
+
+		// Print the table
+		CLT::PrintTable(configTable);
+		std::cout << std::endl;
 	}
 
 }
