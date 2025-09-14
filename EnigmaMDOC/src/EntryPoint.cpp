@@ -1,14 +1,8 @@
 #include <iostream>
 #include <CommandLineTools/ArgParser.h>
-#include <CommandLineTools/IOFormat.h>
-
-#include <fstream>
-#include <filesystem>
 
 #include "ConfigurationLoader.h"
-#include "FileParser.h"
 #include "MarkDownGenerator.h"
-#include "CommentParser.h"
 #include "FileIterator.h"
 #include "Utils.h"
 
@@ -20,7 +14,6 @@ int main(int argc, char** argv) {
 
     // Load Configuration
     Config config = LoadConfigFile();
-    //PrintConfig(config);
 
     // Get the files that need to be parsed
     VarifyDirectories(config);
@@ -36,5 +29,6 @@ int main(int argc, char** argv) {
     }
 
     GenerateMarkdown(docTree, config);
+
     return 0;
 }
